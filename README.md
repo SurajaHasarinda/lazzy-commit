@@ -5,7 +5,7 @@ AI-powered commit message generator for git with built-in security validation an
 ## ✨ Features
 
 - 🤖 **AI-Generated Messages**: Uses Google Gemini to analyze git diffs and generate meaningful commit messages
-- 🔒 **Security Validation**: Automatically detects API keys, tokens, and sensitive data in commits
+- 🔒 **Security Validation**: Automatically detects `API keys`, `tokens`, and `sensitive data` in commits
 - 📝 **Conventional Commits**: Enforces conventional commit format (feat, fix, docs, etc.)
 - ✅ **Smart Validation**: Validates message length, content quality, and format
 - ✏️ **Interactive Editing**: Review, edit, or regenerate commit messages before committing
@@ -30,19 +30,20 @@ AI-powered commit message generator for git with built-in security validation an
 
 2. **Add to PATH**:
    ```powershell
-   [Environment]::SetEnvironmentVariable("Path", $env:Path + ";<repository path>", "User")
+   [Environment]::SetEnvironmentVariable("Path", $env:Path + ";<repository-path>", "User")
    ```
    example:
    ```powershell
    $ [Environment]::SetEnvironmentVariable("Path", $env:Path + ";D:\Repositories\lazzy-commit", "User")
    ```
-   ⚠️ You must restart your pc after adding to PATH for changes to take effect.
+   ⚠️ Restart your pc after adding to PATH for changes to take effect.
 
 3. **Configure API Key**:
    - Edit `.env` file
-   - Add your Gemini API key:
+   - Add your Gemini API key and the model you want to use:
      ```
      GEMINI_API_KEY=your_api_key_here
+     GEMINI_MODEL=gemini-2.0-flash-exp
      ```
 
 4. **Run from any git repository**:
