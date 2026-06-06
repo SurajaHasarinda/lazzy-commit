@@ -1,11 +1,8 @@
-from config.settings import *
+from config.config_manager import ConfigManager
+from config.defaults import DEFAULT_CONFIG, DEFAULT_PROMPT_TEMPLATE
 
 __all__ = [
-    'GEMINI_API_KEY',
-    'GEMINI_MODEL',
-    'MAX_SUBJECT_LENGTH',
-    'CHECK_API_KEYS',
-    'CHECK_SENSITIVE_DATA',
-    'ENFORCE_CONVENTIONAL_COMMITS',
-    'ENFORCE_LENGTH_LIMIT'
+    "ConfigManager",
+    "DEFAULT_CONFIG",
+    "DEFAULT_PROMPT_TEMPLATE",
 ]

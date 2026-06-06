@@ -1,5 +1,4 @@
 @echo off
-
 echo ========================================
 echo        Lazzy Commit - Setup Script
 echo ========================================
@@ -24,7 +23,7 @@ if not exist "%SCRIPT_DIR%\.env" (
     if exist "%SCRIPT_DIR%\.env.example" (
         copy "%SCRIPT_DIR%\.env.example" "%SCRIPT_DIR%\.env" >nul
         echo .env file created from .env.example
-        echo Please edit .env and add your GEMINI_API_KEY
+        echo Tip: run `lazzycommit config` to configure everything in your browser.
     ) else (
         echo WARNING: .env.example not found!
     )
@@ -45,7 +44,7 @@ echo.
 echo [4/4] Installing dependencies...
 call "%SCRIPT_DIR%\venv\Scripts\activate.bat"
 python -m pip install --upgrade pip >nul 2>&1
-python -m pip install -r "%SCRIPT_DIR%\requirements.txt" >nul 2>&1
+python -m pip install -r "%SCRIPT_DIR%\requirements.txt"
 if %errorlevel% neq 0 (
     echo ERROR: Failed to install dependencies!
     pause
@@ -54,13 +53,12 @@ if %errorlevel% neq 0 (
 echo Dependencies installed successfully.
 echo.
 
-:finish
-echo.
 echo ========================================
 echo            SETUP COMPLETE!
 echo ========================================
 echo.
-echo IMPORTANT: Edit .env and add your GEMINI_API_KEY
-echo Then run: lazzycommit
+echo Next steps:
+echo   1. Run: lazzycommit config   (set your API key and preferences)
+echo   2. Stage changes and run: lazzycommit
 echo.
 pause

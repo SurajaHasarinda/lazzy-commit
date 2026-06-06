@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>lazzycommit settings</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f05032' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m10 9-3 3 3 3'/%3E%3Cpath d='m14 15 3-3-3-3'/%3E%3Crect width='18' height='18' x='3' y='3' rx='2'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <!-- Single inline icon set (Phosphor-style line icons, one consistent family).
+       Used via the &lt;use&gt; element referencing each symbol id. Inlined because
+       the settings server runs offline with no package manager available. -->
+  <svg class="sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+    <symbol id="i-cpu" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 2v2M15 2v2M9 20v2M15 20v2M2 9h2M2 15h2M20 9h2M20 15h2"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 4.5-3 7.6-7 9-4-1.4-7-4.5-7-9V6l7-3z"/><path d="M9 12l2 2 4-4"/></symbol>
+    <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/><circle cx="9" cy="7" r="2.2"/><circle cx="15" cy="12" r="2.2"/><circle cx="8" cy="17" r="2.2"/></symbol>
+    <symbol id="i-terminal" viewBox="0 0 24 24"><path d="M5 6l6 6-6 6"/><path d="M13 18h6"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 21h16"/><path d="M6 21V11M12 21V5M18 21v-6"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></symbol>
+    <symbol id="i-monitor" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></symbol>
+    <symbol id="i-key" viewBox="0 0 24 24"><circle cx="8" cy="15" r="4.5"/><path d="M11.2 11.8L20 3"/><path d="M16 5l3 3M14 7l2.5 2.5"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-eye-off" viewBox="0 0 24 24"><path d="M3 3l18 18"/><path d="M10.6 10.6a3 3 0 0 0 4.2 4.2"/><path d="M9.8 5.2A9.4 9.4 0 0 1 12 5c6.5 0 10 7 10 7a13 13 0 0 1-2.2 2.9M6 6.1A13 13 0 0 0 2 12s3.5 7 10 7a9.3 9.3 0 0 0 3.4-.6"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-rotate" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 2.6-6.3L3 8"/><path d="M3 3v5h5"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 4l9 16H3l9-16z"/><path d="M12 10v4M12 17h.01"/></symbol>
+  </svg>
+
+  <div id="toast-host" class="toast-host" aria-live="polite"></div>
+
+  <header class="app-header">
+    <div class="brand">
+      <svg class="git-logo-header" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="m10 9-3 3 3 3"/>
+        <path d="m14 15 3-3-3-3"/>
+        <rect width="18" height="18" x="3" y="3" rx="2"/>
+      </svg>
+      <h1>lazzycommit</h1>
+      <p>settings</p>
+    </div>
+    <div class="header-actions">
+      <span id="api-status" class="status-pill status-pill--muted" title="API key status">
+        <svg class="ic" aria-hidden="true"><use href="#i-key"></use></svg><span id="api-status-text">checking</span>
+      </span>
+      <button id="theme-toggle" class="icon-btn" type="button" title="Toggle theme" aria-label="Toggle color theme">
+        <svg class="ic theme-icon" aria-hidden="true"><use href="#i-moon"></use></svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <nav class="tabs" role="tablist" aria-label="Settings sections">
+      <button class="tab is-active" role="tab" data-tab="ai"><svg class="ic" aria-hidden="true"><use href="#i-cpu"></use></svg><span>model</span></button>
+      <button class="tab" role="tab" data-tab="security"><svg class="ic" aria-hidden="true"><use href="#i-shield"></use></svg><span>security</span></button>
+      <button class="tab" role="tab" data-tab="format"><svg class="ic" aria-hidden="true"><use href="#i-sliders"></use></svg><span>format</span></button>
+      <button class="tab" role="tab" data-tab="prompt"><svg class="ic" aria-hidden="true"><use href="#i-terminal"></use></svg><span>prompt</span></button>
+      <button class="tab" role="tab" data-tab="history"><svg class="ic" aria-hidden="true"><use href="#i-chart"></use></svg><span>stats</span></button>
+    </nav>
+
+    <main class="content">
+      <!-- ===================== AI & MODEL ===================== -->
+      <section class="panel is-active" data-panel="ai">
+        <div class="panel-head">
+          <h2>Model</h2>
+          <p>Connect your Gemini key and tune how messages are generated.</p>
+        </div>
+
+        <div class="group">
+          <div class="field">
+            <label for="api-key">Gemini API key</label>
+            <p class="hint">Stored locally only. Leave blank to keep the existing key or the one from your <code>.env</code>.</p>
+            <div class="input-group">
+              <input id="api-key" type="password" placeholder="AIza… (blank keeps current)" autocomplete="off" spellcheck="false" />
+              <button class="ghost-btn icon-only" type="button" id="toggle-key" title="Show or hide" aria-label="Show key">
+                <svg class="ic" aria-hidden="true"><use href="#i-eye"></use></svg>
+              </button>
+              <button class="secondary-btn" type="button" id="test-key"><svg class="ic" aria-hidden="true"><use href="#i-check"></use></svg>test</button>
+            </div>
+            <p id="key-test-result" class="inline-result"></p>
+          </div>
+
+          <div class="grid-2">
+            <div class="field">
+              <label for="model">Model</label>
+              <div class="input-group">
+                <select id="model" class="model-select">
+                  <option value="" disabled>Loading models…</option>
+                </select>
+                <button class="ghost-btn icon-only" type="button" id="refresh-models" title="Refresh available models" aria-label="Refresh models">
+                  <svg class="ic" aria-hidden="true"><use href="#i-rotate"></use></svg>
+                </button>
+              </div>
+              <p id="model-status" class="hint"></p>
+            </div>
+            <div class="field">
+              <label for="max-diff">Max diff sent to AI <span id="max-diff-val" class="badge"></span></label>
+              <input id="max-diff" type="range" min="2000" max="60000" step="1000" />
+              <p class="hint">Larger gives more context at higher cost and latency.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== SECURITY ===================== -->
+      <section class="panel" data-panel="security">
+        <div class="panel-head">
+          <h2>Security</h2>
+          <p>Stop secrets and personal data from reaching a commit.</p>
+        </div>
+
+        <div class="group">
+          <div class="toggle-row">
+            <div>
+              <strong>Scan for API keys and tokens</strong>
+              <p class="hint">Blocks AWS, GitHub, Google, Stripe and 15+ other credential formats.</p>
+            </div>
+            <label class="switch"><input type="checkbox" id="check-api-keys" /><span class="slider"></span></label>
+          </div>
+          <div class="toggle-row">
+            <div>
+              <strong>Scan for sensitive data</strong>
+              <p class="hint">Detects credit-card numbers and SSNs in diffs.</p>
+            </div>
+            <label class="switch"><input type="checkbox" id="check-sensitive" /><span class="slider"></span></label>
+          </div>
+        </div>
+
+        <div class="group">
+          <div class="group-head">
+            <h3>Custom secret patterns</h3>
+            <p class="hint">Your own regex rules, scanned against diffs like the built-ins.</p>
+          </div>
+          <div id="patterns-list" class="patterns-list"></div>
+          <div class="pattern-add">
+            <input id="pattern-name" placeholder="name (e.g. internal host)" />
+            <input id="pattern-regex" placeholder="regex (e.g. corp-[a-z0-9]{8})" spellcheck="false" />
+            <button class="secondary-btn" type="button" id="add-pattern"><svg class="ic" aria-hidden="true"><use href="#i-plus"></use></svg>add</button>
+          </div>
+          <p id="pattern-error" class="inline-result"></p>
+        </div>
+      </section>
+
+      <!-- ===================== FORMAT RULES ===================== -->
+      <section class="panel" data-panel="format">
+        <div class="panel-head">
+          <h2>Format rules</h2>
+          <p>Shape the commit messages the tool will accept.</p>
+        </div>
+
+        <div class="group">
+          <div class="toggle-row">
+            <div>
+              <strong>Enforce Conventional Commits</strong>
+              <p class="hint">Require <code>type(scope): description</code>.</p>
+            </div>
+            <label class="switch"><input type="checkbox" id="enforce-conventional" /><span class="slider"></span></label>
+          </div>
+          <div class="toggle-row">
+            <div>
+              <strong>Enforce subject length limit</strong>
+              <p class="hint">Keep subjects short for a readable <code>git log</code>.</p>
+            </div>
+            <label class="switch"><input type="checkbox" id="enforce-length" /><span class="slider"></span></label>
+          </div>
+          <div class="toggle-row">
+            <div>
+              <strong>Allow overrides</strong>
+              <p class="hint">Let users bypass a block after a warning. Turn off for strict mode.</p>
+            </div>
+            <label class="switch"><input type="checkbox" id="allow-override" /><span class="slider"></span></label>
+          </div>
+        </div>
+
+        <div class="group">
+          <div class="grid-2">
+            <div class="field">
+              <label for="max-subject">Max subject length <span id="max-subject-val" class="badge"></span></label>
+              <input id="max-subject" type="range" min="10" max="200" step="1" />
+            </div>
+            <div class="field">
+              <label for="min-length">Min message length <span id="min-length-val" class="badge"></span></label>
+              <input id="min-length" type="range" min="1" max="50" step="1" />
+            </div>
+          </div>
+        </div>
+
+        <div class="group">
+          <div class="group-head"><h3>Allowed commit types</h3>
+            <p class="hint">Types accepted in the subject line.</p></div>
+          <div id="types-chips" class="chips"></div>
+          <div class="chip-add">
+            <input id="type-input" placeholder="add type (e.g. deps)" spellcheck="false" />
+            <button class="secondary-btn" type="button" id="add-type"><svg class="ic" aria-hidden="true"><use href="#i-plus"></use></svg>add</button>
+          </div>
+        </div>
+
+        <div class="group">
+          <div class="group-head"><h3>Forbidden words</h3>
+            <p class="hint">Subjects containing these are rejected.</p></div>
+          <div id="words-chips" class="chips"></div>
+          <div class="chip-add">
+            <input id="word-input" placeholder="add word (e.g. asdf)" spellcheck="false" />
+            <button class="secondary-btn" type="button" id="add-word"><svg class="ic" aria-hidden="true"><use href="#i-plus"></use></svg>add</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== AI PROMPT ===================== -->
+      <section class="panel" data-panel="prompt">
+        <div class="panel-head">
+          <h2>Prompt</h2>
+          <p>Customise the instructions sent to the model. Advanced, but powerful.</p>
+        </div>
+
+        <div class="group">
+          <div class="prompt-toolbar">
+            <div class="placeholder-help">
+              <span class="hint">Required placeholders, click to insert:</span>
+              <button class="placeholder-chip" type="button" data-ph="{files_summary}">{files_summary}</button>
+              <button class="placeholder-chip" type="button" data-ph="{diffs}">{diffs}</button>
+            </div>
+            <button class="ghost-btn" type="button" id="reset-prompt"><svg class="ic" aria-hidden="true"><use href="#i-rotate"></use></svg>reset</button>
+          </div>
+          <textarea id="prompt-template" class="prompt-area" spellcheck="false" rows="16"></textarea>
+          <p id="prompt-error" class="inline-result"></p>
+        </div>
+      </section>
+
+      <!-- ===================== HISTORY & STATS ===================== -->
+      <section class="panel" data-panel="history">
+        <div class="panel-head">
+          <h2>Stats</h2>
+          <p>Insight into your generated commits. All data stays on this machine.</p>
+        </div>
+
+        <div class="group">
+          <div class="toggle-row">
+            <div>
+              <strong>Record commit history</strong>
+              <p class="hint">Log generated messages and outcomes locally.</p>
+            </div>
+            <label class="switch"><input type="checkbox" id="history-enabled" /><span class="slider"></span></label>
+          </div>
+        </div>
+
+        <dl class="stat-row">
+          <div class="stat"><dt>commits generated</dt><dd id="stat-total">0</dd></div>
+          <div class="stat"><dt>acceptance rate</dt><dd id="stat-accept">0%</dd></div>
+          <div class="stat"><dt>overrides used</dt><dd id="stat-overrides">0</dd></div>
+        </dl>
+
+        <div class="group">
+          <div class="group-head"><h3>Type distribution</h3></div>
+          <div id="type-dist" class="dist"></div>
+        </div>
+
+        <div class="group">
+          <div class="group-head between">
+            <h3>Recent activity</h3>
+            <button class="ghost-btn danger" type="button" id="clear-history"><svg class="ic" aria-hidden="true"><use href="#i-trash"></use></svg>clear</button>
+          </div>
+          <div id="recent-list" class="recent-list"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="save-bar">
+    <span id="dirty-indicator" class="dirty-indicator">All changes saved</span>
+    <div class="save-actions">
+      <button class="ghost-btn" type="button" id="discard">Discard</button>
+      <button class="primary-btn" type="button" id="save"><svg class="ic" aria-hidden="true"><use href="#i-check"></use></svg>Save changes</button>
+    </div>
+  </footer>
+
+  <!-- Custom confirm dialog (replaces native confirm()) -->
+  <dialog id="confirm-dialog" class="confirm-dialog">
+    <div class="dialog-content">
+      <div class="dialog-icon">
+        <svg class="ic" aria-hidden="true"><use href="#i-alert"></use></svg>
+      </div>
+      <h3 id="confirm-title">Are you sure?</h3>
+      <p id="confirm-message"></p>
+      <div class="dialog-actions">
+        <button class="ghost-btn" type="button" id="confirm-cancel">Cancel</button>
+        <button class="primary-btn danger-btn" type="button" id="confirm-ok">Confirm</button>
+      </div>
+    </div>
+  </dialog>
+
+  <script src="/static/app.js" defer></script>
+</body>
+</html>

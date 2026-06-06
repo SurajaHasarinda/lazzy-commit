@@ -1,2 +1,9 @@
-google-generativeai>=0.3.0
+# --- Core (commit generation) ---
+google-genai
 python-dotenv>=1.0.0
+
+# --- Settings UI (`lazzycommit config`) ---
+# FastAPI + uvicorn power the local settings server; pydantic ships with FastAPI
+# and is used for request bodies.
+fastapi>=0.110.0
+uvicorn>=0.29.0

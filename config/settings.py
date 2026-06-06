@@ -1,19 +1,13 @@
-import os
-from dotenv import load_dotenv
+from config.config_manager import ConfigManager
 
-load_dotenv()
+_cfg = ConfigManager()
 
-# API Configuration
-GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
-GEMINI_MODEL = os.getenv('GEMINI_MODEL', 'gemini-pro')
-
-# Validation Settings
-MAX_SUBJECT_LENGTH = int(os.getenv('MAX_SUBJECT_LENGTH', '100'))
-
-# Security Settings
-CHECK_API_KEYS = os.getenv('CHECK_API_KEYS', 'true').lower() == 'true'
-CHECK_SENSITIVE_DATA = os.getenv('CHECK_SENSITIVE_DATA', 'true').lower() == 'true'
-
-# Format Settings
-ENFORCE_CONVENTIONAL_COMMITS = os.getenv('ENFORCE_CONVENTIONAL_COMMITS', 'true').lower() == 'true'
-ENFORCE_LENGTH_LIMIT = os.getenv('ENFORCE_LENGTH_LIMIT', 'true').lower() == 'true'
+# --- Legacy constant surface (kept identical to the original settings.py) -----
+GEMINI_API_KEY = _cfg.resolve_api_key()
+GEMINI_MODEL = _cfg.get("ai.model")
+MAX_SUBJECT_LENGTH = _cfg.get("validation.max_subject_length")
+CHECK_API_KEYS = _cfg.get("validation.check_api_keys")
+CHECK_SENSITIVE_DATA = _cfg.get("validation.check_sensitive_data")
+ENFORCE_CONVENTIONAL_COMMITS = _cfg.get("validation.enforce_conventional_commits")
+ENFORCE_LENGTH_LIMIT = _cfg.get("validation.enforce_length_limit")
+ALLOW_OVERRIDE = _cfg.get("validation.allow_override")

@@ -1,37 +1,34 @@
-import google.generativeai as genai
+import google.genai as genai
 from typing import Optional, List, Dict
+
+from config.defaults import DEFAULT_PROMPT_TEMPLATE
 
 
 class AIInterface:
+    """
+    Wraps the Google Gemini client and turns staged diffs into a commit message.
 
-    # Prompt template for commit message generation 
-    GENERATION_PROMPT = """
-        Analyze the following git changes and generate ONE professional commit message following the Conventional Commits format.
+    The prompt template is now injected (was a hard-coded class constant) so users
+    can tailor the model's instructions from the settings UI — e.g. enforce a
+    different tone, language, or ticket-prefix convention — without editing code.
+    The template must contain {files_summary} and {diffs}; that invariant is
+    enforced by ConfigManager before a custom template is ever saved.
+    """
 
-        Conventional Commits format: <type>: <description>
-
-        Types: feat, fix, docs, style, refactor, test, build, ci, modify
-        Description: imperative mood, lowercase, no period at end
-
-        IMPORTANT: Keep the first line under 72 characters.
-
-        Choose the MOST SIGNIFICANT change as the primary type.
-
-        Files changed:
-        {files_summary}
-
-        Git diffs:
-        {diffs}
-
-        Provide ONLY the commit message, nothing else. No explanation, no markdown, no quotes.
-        Example: feat: add JWT authentication system
-        """
-    
-    def __init__(self, api_key: str, model_name: str):
-        genai.configure(api_key=api_key)
-        self.model = genai.GenerativeModel(model_name)
+    def __init__(
+        self,
+        api_key: str,
+        model_name: str,
+        prompt_template: Optional[str] = None,
+        max_diff_chars: int = 30000,
+    ):
+        self.client = genai.Client(api_key=api_key)
         self.model_name = model_name
-    
+        # Fall back to the factory template if a caller passes nothing, so the
+        # interface is still usable in isolation (tests, scripts).
+        self.prompt_template = prompt_template or DEFAULT_PROMPT_TEMPLATE
+        self.max_diff_chars = max_diff_chars
+
     def generate_commit_message(self, file_diffs: List[Dict[str, str]]) -> Optional[str]:
         """
         Generate commit message from file diffs.
@@ -41,31 +38,36 @@ class AIInterface:
 
         Returns:
             Generated commit message or None if failed.
-        
         """
         try:
             files_summary = "\n".join([f"- {item['file']}" for item in file_diffs])
             diffs_text = "\n\n".join([
-                f"=== {item['file']} ===\n{item['diff']}" 
+                f"=== {item['file']} ===\n{item['diff']}"
                 for item in file_diffs
             ])
-            
-            # Truncate if too long
-            if len(diffs_text) > 30000:
-                diffs_text = diffs_text[:30000] + "\n\n... (truncated)"
-            
-            prompt = self.GENERATION_PROMPT.format(
+
+            # Truncate oversized diffs so we stay within the configured budget
+            # (controls both API cost and latency).
+            if len(diffs_text) > self.max_diff_chars:
+                diffs_text = diffs_text[:self.max_diff_chars] + "\n\n... (truncated)"
+
+            prompt = self.prompt_template.format(
                 files_summary=files_summary,
                 diffs=diffs_text
             )
-            
-            response = self.model.generate_content(prompt)
-            
+
+            response = self.client.models.generate_content(
+                model=self.model_name,
+                contents=prompt
+            )
+
             if response and hasattr(response, 'text') and response.text:
                 message = response.text.strip()
+                # Models sometimes wrap output in backticks/quotes despite the
+                # prompt; strip them so the raw subject line passes validation.
                 message = message.strip('`').strip('"').strip("'")
                 return message
-            
+
             return None
         except Exception as e:
             print(f"AI error: {e}")

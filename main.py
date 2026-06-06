@@ -1,106 +1,74 @@
 import sys
-import os
 import argparse
 
-from core.git_interface import GitInterface
-from core.ai_interface import AIInterface
-from validators.api_key_validator import APIKeyValidator, SensitiveDataValidator
-from validators.format_validator import ConventionalCommitValidator, LengthValidator, ContentValidator
-from services.validation_chain import ValidationChain
-from services.commit_service import CommitService
+from config.config_manager import ConfigManager
+from bootstrap import build_commit_service
 from cli.commit_cli import CommitCLI
-from config import settings
-
-def setup_validation_chain() -> ValidationChain:
-    """
-    Setup validation chain with all validators.
-    
-    Args:
-        None
-
-    Returns:
-        An instance of ValidationChain with validators added.
-    """
-    chain = ValidationChain()
-
-    if settings.CHECK_API_KEYS:
-        chain.add_validator(APIKeyValidator())
-    
-    if settings.CHECK_SENSITIVE_DATA:
-        chain.add_validator(SensitiveDataValidator())
-    
-    if settings.ENFORCE_CONVENTIONAL_COMMITS:
-        chain.add_validator(ConventionalCommitValidator())
-    
-    if settings.ENFORCE_LENGTH_LIMIT:
-        chain.add_validator(LengthValidator(max_subject_length=settings.MAX_SUBJECT_LENGTH))
-    
-    chain.add_validator(ContentValidator())
-    return chain
 
 
-def load_config() -> tuple:
-    """
-    Load configuration from environment.
+def run_commit(args: argparse.Namespace) -> int:
+    """The default workflow: generate, review, and create a commit."""
+    cfg = ConfigManager()
 
-    Args:
-        None
-
-    Returns:
-        A tuple (api_key, model_name).
-    """
-    api_key = settings.GEMINI_API_KEY
-    model_name = settings.GEMINI_MODEL
-    
+    api_key = cfg.resolve_api_key()
     if not api_key:
-        print("✗ GEMINI_API_KEY not found")
-        print("\nAdd to .env file:")
-        print("  GEMINI_API_KEY=your_key_here")
-        return None, model_name
-    
-    return api_key, model_name
-
-
-def parse_arguments() -> argparse.Namespace:
-    """
-    Parse command-line arguments.
-    
-    Args:
-        None
-
-    Returns:
-        Parsed arguments namespace.
-    """
-    parser = argparse.ArgumentParser(description="AI Commit Message Generator")
-    parser.add_argument('--push', '-p', action='store_true', help='Push after commit')
-    return parser.parse_args()
-
-
-def main() -> int:
-    """
-    Main entry point.
-    
-    Args:
-        None
-        
-    Returns:
-        Exit code (0 for success, 1 for failure).
-    """
-    args = parse_arguments()
-    
-    api_key, model_name = load_config()
-    if not api_key:
+        print("✗ No Gemini API key found.")
+        print("\nFix it either way:")
+        print("  • Run:  lazzycommit config   (set it in the UI)")
+        print("  • Or add GEMINI_API_KEY to your .env file")
         return 1
-    
-    # Dependency injection
-    git = GitInterface()
-    ai = AIInterface(api_key, model_name)
-    chain = setup_validation_chain()
-    service = CommitService(git, ai, chain)
-    cli = CommitCLI(service, should_push=args.push)
-    
+
+    service = build_commit_service(cfg)
+
+    # Override is permitted only when both the setting allows it AND the user
+    # didn't pass --force. (Force means "don't prompt me", so overrides are moot.)
+    allow_override = cfg.get("validation.allow_override", True) and not args.force
+    cli = CommitCLI(service, should_push=args.push, allow_override=allow_override)
     return cli.run()
 
 
-if __name__ == '__main__':
+def run_config(args: argparse.Namespace) -> int:
+    """Launch the local settings server (imports web deps lazily)."""
+    try:
+        from ui.server import serve
+    except ImportError as exc:
+        # FastAPI/uvicorn are only needed for the settings UI; give a precise hint
+        # instead of a raw traceback if the optional deps aren't installed.
+        print(f"✗ Settings UI dependencies missing: {exc}")
+        print("  Install them with:  pip install -r requirements.txt")
+        return 1
+    serve(open_browser=not args.no_browser)
+    return 0
+
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        prog="lazzycommit",
+        description="AI-powered commit message generator with security validation.",
+    )
+    # Flags live on the top-level parser so the legacy `lazzycommit -p` form keeps
+    # working without naming a subcommand.
+    parser.add_argument("--push", "-p", action="store_true", help="Push after commit")
+    parser.add_argument(
+        "--force", "-f", action="store_true",
+        help="Commit without validation prompts (overrides all blocks)",
+    )
+
+    sub = parser.add_subparsers(dest="command")
+    config_p = sub.add_parser("config", help="Open the settings UI in your browser")
+    config_p.add_argument("--no-browser", action="store_true",
+                          help="Start the server without auto-opening a browser")
+    return parser
+
+
+def main() -> int:
+    parser = build_parser()
+    args = parser.parse_args()
+
+    if args.command == "config":
+        return run_config(args)
+    return run_commit(args)
+
+
+if __name__ == "__main__":
     sys.exit(main())
