@@ -33,241 +33,304 @@
 
   <div id="toast-host" class="toast-host" aria-live="polite"></div>
 
-  <header class="app-header">
-    <div class="brand">
-      <svg class="git-logo-header" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="m10 9-3 3 3 3"/>
-        <path d="m14 15 3-3-3-3"/>
-        <rect width="18" height="18" x="3" y="3" rx="2"/>
-      </svg>
-      <h1>lazzycommit</h1>
-      <p>settings</p>
-    </div>
-    <div class="header-actions">
-      <span id="api-status" class="status-pill status-pill--muted" title="API key status">
-        <svg class="ic" aria-hidden="true"><use href="#i-key"></use></svg><span id="api-status-text">checking</span>
-      </span>
-      <button id="theme-toggle" class="icon-btn" type="button" title="Toggle theme" aria-label="Toggle color theme">
-        <svg class="ic theme-icon" aria-hidden="true"><use href="#i-moon"></use></svg>
-      </button>
-    </div>
-  </header>
-
-  <div class="layout">
-    <nav class="tabs" role="tablist" aria-label="Settings sections">
-      <button class="tab is-active" role="tab" data-tab="ai"><svg class="ic" aria-hidden="true"><use href="#i-cpu"></use></svg><span>model</span></button>
-      <button class="tab" role="tab" data-tab="security"><svg class="ic" aria-hidden="true"><use href="#i-shield"></use></svg><span>security</span></button>
-      <button class="tab" role="tab" data-tab="format"><svg class="ic" aria-hidden="true"><use href="#i-sliders"></use></svg><span>format</span></button>
-      <button class="tab" role="tab" data-tab="prompt"><svg class="ic" aria-hidden="true"><use href="#i-terminal"></use></svg><span>prompt</span></button>
-      <button class="tab" role="tab" data-tab="history"><svg class="ic" aria-hidden="true"><use href="#i-chart"></use></svg><span>stats</span></button>
-    </nav>
-
-    <main class="content">
-      <!-- ===================== AI & MODEL ===================== -->
-      <section class="panel is-active" data-panel="ai">
-        <div class="panel-head">
-          <h2>Model</h2>
-          <p>Connect your Gemini key and tune how messages are generated.</p>
+  <!-- ===================== DASHBOARD SHELL ===================== -->
+  <div class="app">
+    <!-- Sidebar: brand + section nav. Collapses to a top rail under 860px. -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <svg class="git-logo-header" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m10 9-3 3 3 3"/>
+          <path d="m14 15 3-3-3-3"/>
+          <rect width="18" height="18" x="3" y="3" rx="2"/>
+        </svg>
+        <div class="sidebar-brand-text">
+          <strong>lazzycommit</strong>
+          <span>settings</span>
         </div>
+      </div>
 
-        <div class="group">
-          <div class="field">
-            <label for="api-key">Gemini API key</label>
-            <p class="hint">Stored locally only. Leave blank to keep the existing key or the one from your <code>.env</code>.</p>
-            <div class="input-group">
-              <input id="api-key" type="password" placeholder="AIza… (blank keeps current)" autocomplete="off" spellcheck="false" />
-              <button class="ghost-btn icon-only" type="button" id="toggle-key" title="Show or hide" aria-label="Show key">
-                <svg class="ic" aria-hidden="true"><use href="#i-eye"></use></svg>
-              </button>
-              <button class="secondary-btn" type="button" id="test-key"><svg class="ic" aria-hidden="true"><use href="#i-check"></use></svg>test</button>
-            </div>
-            <p id="key-test-result" class="inline-result"></p>
+      <nav class="tabs" role="tablist" aria-label="Settings sections">
+        <button class="tab is-active" role="tab" data-tab="ai"><svg class="ic" aria-hidden="true"><use href="#i-cpu"></use></svg><span>Model</span></button>
+        <button class="tab" role="tab" data-tab="security"><svg class="ic" aria-hidden="true"><use href="#i-shield"></use></svg><span>Security</span></button>
+        <button class="tab" role="tab" data-tab="format"><svg class="ic" aria-hidden="true"><use href="#i-sliders"></use></svg><span>Format</span></button>
+        <button class="tab" role="tab" data-tab="prompt"><svg class="ic" aria-hidden="true"><use href="#i-terminal"></use></svg><span>Prompt</span></button>
+        <button class="tab" role="tab" data-tab="history"><svg class="ic" aria-hidden="true"><use href="#i-chart"></use></svg><span>Stats</span></button>
+      </nav>
+
+    </aside>
+
+    <!-- Main column: topbar (status + theme, top-right) + scrolling content -->
+    <div class="main">
+      <header class="topbar">
+        <span id="api-status" class="status-pill status-pill--muted" title="API key status">
+          <svg class="ic" aria-hidden="true"><use href="#i-key"></use></svg><span id="api-status-text">checking</span>
+        </span>
+        <button id="theme-toggle" class="icon-btn" type="button" title="Toggle theme" aria-label="Toggle color theme">
+          <svg class="ic theme-icon" aria-hidden="true"><use href="#i-moon"></use></svg>
+        </button>
+      </header>
+      <main class="content">
+        <!-- ===================== AI & MODEL ===================== -->
+        <section class="panel is-active" data-panel="ai">
+          <div class="panel-head">
+            <h2>Model</h2>
+            <p>Connect your Gemini key and tune how messages are generated.</p>
           </div>
 
-          <div class="grid-2">
-            <div class="field">
-              <label for="model">Model</label>
-              <div class="input-group">
-                <select id="model" class="model-select">
-                  <option value="" disabled>Loading models…</option>
-                </select>
-                <button class="ghost-btn icon-only" type="button" id="refresh-models" title="Refresh available models" aria-label="Refresh models">
-                  <svg class="ic" aria-hidden="true"><use href="#i-rotate"></use></svg>
-                </button>
+          <div class="card">
+            <div class="card-head">
+              <h3>API connection</h3>
+              <p class="hint">Your key is stored locally only.</p>
+            </div>
+            <div class="card-body">
+              <div class="field">
+                <label for="api-key">Gemini API key</label>
+                <p class="hint">Leave blank to keep the existing key or the one from your <code>.env</code>.</p>
+                <div class="input-group">
+                  <input id="api-key" type="password" placeholder="AIza… (blank keeps current)" autocomplete="off" spellcheck="false" />
+                  <button class="ghost-btn icon-only" type="button" id="toggle-key" title="Show or hide" aria-label="Show key">
+                    <svg class="ic" aria-hidden="true"><use href="#i-eye"></use></svg>
+                  </button>
+                  <button class="secondary-btn" type="button" id="test-key"><svg class="ic" aria-hidden="true"><use href="#i-check"></use></svg>test</button>
+                </div>
+                <p id="key-test-result" class="inline-result"></p>
               </div>
-              <p id="model-status" class="hint"></p>
-            </div>
-            <div class="field">
-              <label for="max-diff">Max diff sent to AI <span id="max-diff-val" class="badge"></span></label>
-              <input id="max-diff" type="range" min="2000" max="60000" step="1000" />
-              <p class="hint">Larger gives more context at higher cost and latency.</p>
             </div>
           </div>
-        </div>
-      </section>
 
-      <!-- ===================== SECURITY ===================== -->
-      <section class="panel" data-panel="security">
-        <div class="panel-head">
-          <h2>Security</h2>
-          <p>Stop secrets and personal data from reaching a commit.</p>
-        </div>
-
-        <div class="group">
-          <div class="toggle-row">
-            <div>
-              <strong>Scan for API keys and tokens</strong>
-              <p class="hint">Blocks AWS, GitHub, Google, Stripe and 15+ other credential formats.</p>
+          <div class="card">
+            <div class="card-head">
+              <h3>Generation</h3>
+              <p class="hint">Pick the model and how much diff context it sees.</p>
             </div>
-            <label class="switch"><input type="checkbox" id="check-api-keys" /><span class="slider"></span></label>
-          </div>
-          <div class="toggle-row">
-            <div>
-              <strong>Scan for sensitive data</strong>
-              <p class="hint">Detects credit-card numbers and SSNs in diffs.</p>
-            </div>
-            <label class="switch"><input type="checkbox" id="check-sensitive" /><span class="slider"></span></label>
-          </div>
-        </div>
-
-        <div class="group">
-          <div class="group-head">
-            <h3>Custom secret patterns</h3>
-            <p class="hint">Your own regex rules, scanned against diffs like the built-ins.</p>
-          </div>
-          <div id="patterns-list" class="patterns-list"></div>
-          <div class="pattern-add">
-            <input id="pattern-name" placeholder="name (e.g. internal host)" />
-            <input id="pattern-regex" placeholder="regex (e.g. corp-[a-z0-9]{8})" spellcheck="false" />
-            <button class="secondary-btn" type="button" id="add-pattern"><svg class="ic" aria-hidden="true"><use href="#i-plus"></use></svg>add</button>
-          </div>
-          <p id="pattern-error" class="inline-result"></p>
-        </div>
-      </section>
-
-      <!-- ===================== FORMAT RULES ===================== -->
-      <section class="panel" data-panel="format">
-        <div class="panel-head">
-          <h2>Format rules</h2>
-          <p>Shape the commit messages the tool will accept.</p>
-        </div>
-
-        <div class="group">
-          <div class="toggle-row">
-            <div>
-              <strong>Enforce Conventional Commits</strong>
-              <p class="hint">Require <code>type(scope): description</code>.</p>
-            </div>
-            <label class="switch"><input type="checkbox" id="enforce-conventional" /><span class="slider"></span></label>
-          </div>
-          <div class="toggle-row">
-            <div>
-              <strong>Enforce subject length limit</strong>
-              <p class="hint">Keep subjects short for a readable <code>git log</code>.</p>
-            </div>
-            <label class="switch"><input type="checkbox" id="enforce-length" /><span class="slider"></span></label>
-          </div>
-          <div class="toggle-row">
-            <div>
-              <strong>Allow overrides</strong>
-              <p class="hint">Let users bypass a block after a warning. Turn off for strict mode.</p>
-            </div>
-            <label class="switch"><input type="checkbox" id="allow-override" /><span class="slider"></span></label>
-          </div>
-        </div>
-
-        <div class="group">
-          <div class="grid-2">
-            <div class="field">
-              <label for="max-subject">Max subject length <span id="max-subject-val" class="badge"></span></label>
-              <input id="max-subject" type="range" min="10" max="200" step="1" />
-            </div>
-            <div class="field">
-              <label for="min-length">Min message length <span id="min-length-val" class="badge"></span></label>
-              <input id="min-length" type="range" min="1" max="50" step="1" />
+            <div class="card-body">
+              <div class="grid-2">
+                <div class="field">
+                  <label for="model">Model</label>
+                  <div class="input-group">
+                    <select id="model" class="model-select">
+                      <option value="" disabled>Loading models…</option>
+                    </select>
+                    <button class="ghost-btn icon-only" type="button" id="refresh-models" title="Refresh available models" aria-label="Refresh models">
+                      <svg class="ic" aria-hidden="true"><use href="#i-rotate"></use></svg>
+                    </button>
+                  </div>
+                  <p id="model-status" class="hint"></p>
+                </div>
+                <div class="field">
+                  <label for="max-diff">Max diff sent to AI <span id="max-diff-val" class="badge"></span></label>
+                  <input id="max-diff" type="range" min="2000" max="60000" step="1000" />
+                  <p class="hint">Larger gives more context at higher cost and latency.</p>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
+        </section>
 
-        <div class="group">
-          <div class="group-head"><h3>Allowed commit types</h3>
-            <p class="hint">Types accepted in the subject line.</p></div>
-          <div id="types-chips" class="chips"></div>
-          <div class="chip-add">
-            <input id="type-input" placeholder="add type (e.g. deps)" spellcheck="false" />
-            <button class="secondary-btn" type="button" id="add-type"><svg class="ic" aria-hidden="true"><use href="#i-plus"></use></svg>add</button>
+        <!-- ===================== SECURITY ===================== -->
+        <section class="panel" data-panel="security">
+          <div class="panel-head">
+            <h2>Security</h2>
+            <p>Stop secrets and personal data from reaching a commit.</p>
           </div>
-        </div>
 
-        <div class="group">
-          <div class="group-head"><h3>Forbidden words</h3>
-            <p class="hint">Subjects containing these are rejected.</p></div>
-          <div id="words-chips" class="chips"></div>
-          <div class="chip-add">
-            <input id="word-input" placeholder="add word (e.g. asdf)" spellcheck="false" />
-            <button class="secondary-btn" type="button" id="add-word"><svg class="ic" aria-hidden="true"><use href="#i-plus"></use></svg>add</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- ===================== AI PROMPT ===================== -->
-      <section class="panel" data-panel="prompt">
-        <div class="panel-head">
-          <h2>Prompt</h2>
-          <p>Customise the instructions sent to the model. Advanced, but powerful.</p>
-        </div>
-
-        <div class="group">
-          <div class="prompt-toolbar">
-            <div class="placeholder-help">
-              <span class="hint">Required placeholders, click to insert:</span>
-              <button class="placeholder-chip" type="button" data-ph="{files_summary}">{files_summary}</button>
-              <button class="placeholder-chip" type="button" data-ph="{diffs}">{diffs}</button>
+          <div class="card">
+            <div class="card-head">
+              <h3>Built-in scanners</h3>
+              <p class="hint">Always available, toggle per category.</p>
             </div>
-            <button class="ghost-btn" type="button" id="reset-prompt"><svg class="ic" aria-hidden="true"><use href="#i-rotate"></use></svg>reset</button>
-          </div>
-          <textarea id="prompt-template" class="prompt-area" spellcheck="false" rows="16"></textarea>
-          <p id="prompt-error" class="inline-result"></p>
-        </div>
-      </section>
-
-      <!-- ===================== HISTORY & STATS ===================== -->
-      <section class="panel" data-panel="history">
-        <div class="panel-head">
-          <h2>Stats</h2>
-          <p>Insight into your generated commits. All data stays on this machine.</p>
-        </div>
-
-        <div class="group">
-          <div class="toggle-row">
-            <div>
-              <strong>Record commit history</strong>
-              <p class="hint">Log generated messages and outcomes locally.</p>
+            <div class="card-body">
+              <div class="toggle-row">
+                <div>
+                  <strong>Scan for API keys and tokens</strong>
+                  <p class="hint">Blocks AWS, GitHub, Google, Stripe and 15+ other credential formats.</p>
+                </div>
+                <label class="switch"><input type="checkbox" id="check-api-keys" /><span class="slider"></span></label>
+              </div>
+              <div class="toggle-row">
+                <div>
+                  <strong>Scan for sensitive data</strong>
+                  <p class="hint">Detects credit-card numbers and SSNs in diffs.</p>
+                </div>
+                <label class="switch"><input type="checkbox" id="check-sensitive" /><span class="slider"></span></label>
+              </div>
             </div>
-            <label class="switch"><input type="checkbox" id="history-enabled" /><span class="slider"></span></label>
           </div>
-        </div>
 
-        <dl class="stat-row">
-          <div class="stat"><dt>commits generated</dt><dd id="stat-total">0</dd></div>
-          <div class="stat"><dt>acceptance rate</dt><dd id="stat-accept">0%</dd></div>
-          <div class="stat"><dt>overrides used</dt><dd id="stat-overrides">0</dd></div>
-        </dl>
-
-        <div class="group">
-          <div class="group-head"><h3>Type distribution</h3></div>
-          <div id="type-dist" class="dist"></div>
-        </div>
-
-        <div class="group">
-          <div class="group-head between">
-            <h3>Recent activity</h3>
-            <button class="ghost-btn danger" type="button" id="clear-history"><svg class="ic" aria-hidden="true"><use href="#i-trash"></use></svg>clear</button>
+          <div class="card">
+            <div class="card-head">
+              <h3>Custom secret patterns</h3>
+              <p class="hint">Your own regex rules, scanned against diffs like the built-ins.</p>
+            </div>
+            <div class="card-body">
+              <div id="patterns-list" class="patterns-list"></div>
+              <div class="pattern-add">
+                <input id="pattern-name" placeholder="name (e.g. internal host)" />
+                <input id="pattern-regex" placeholder="regex (e.g. corp-[a-z0-9]{8})" spellcheck="false" />
+                <button class="secondary-btn" type="button" id="add-pattern"><svg class="ic" aria-hidden="true"><use href="#i-plus"></use></svg>add</button>
+              </div>
+              <p id="pattern-error" class="inline-result"></p>
+            </div>
           </div>
-          <div id="recent-list" class="recent-list"></div>
-        </div>
-      </section>
-    </main>
+        </section>
+
+        <!-- ===================== FORMAT RULES ===================== -->
+        <section class="panel" data-panel="format">
+          <div class="panel-head">
+            <h2>Format rules</h2>
+            <p>Shape the commit messages the tool will accept.</p>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <h3>Enforcement</h3>
+            </div>
+            <div class="card-body">
+              <div class="toggle-row">
+                <div>
+                  <strong>Enforce Conventional Commits</strong>
+                  <p class="hint">Require <code>type(scope): description</code>.</p>
+                </div>
+                <label class="switch"><input type="checkbox" id="enforce-conventional" /><span class="slider"></span></label>
+              </div>
+              <div class="toggle-row">
+                <div>
+                  <strong>Enforce subject length limit</strong>
+                  <p class="hint">Keep subjects short for a readable <code>git log</code>.</p>
+                </div>
+                <label class="switch"><input type="checkbox" id="enforce-length" /><span class="slider"></span></label>
+              </div>
+              <div class="toggle-row">
+                <div>
+                  <strong>Allow overrides</strong>
+                  <p class="hint">Let users bypass a block after a warning. Turn off for strict mode.</p>
+                </div>
+                <label class="switch"><input type="checkbox" id="allow-override" /><span class="slider"></span></label>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <h3>Length limits</h3>
+            </div>
+            <div class="card-body">
+              <div class="grid-2">
+                <div class="field">
+                  <label for="max-subject">Max subject length <span id="max-subject-val" class="badge"></span></label>
+                  <input id="max-subject" type="range" min="10" max="200" step="1" />
+                </div>
+                <div class="field">
+                  <label for="min-length">Min message length <span id="min-length-val" class="badge"></span></label>
+                  <input id="min-length" type="range" min="1" max="50" step="1" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <h3>Allowed commit types</h3>
+              <p class="hint">Types accepted in the subject line.</p>
+            </div>
+            <div class="card-body">
+              <div id="types-chips" class="chips"></div>
+              <div class="chip-add">
+                <input id="type-input" placeholder="add type (e.g. deps)" spellcheck="false" />
+                <button class="secondary-btn" type="button" id="add-type"><svg class="ic" aria-hidden="true"><use href="#i-plus"></use></svg>add</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <h3>Forbidden words</h3>
+              <p class="hint">Subjects containing these are rejected.</p>
+            </div>
+            <div class="card-body">
+              <div id="words-chips" class="chips"></div>
+              <div class="chip-add">
+                <input id="word-input" placeholder="add word (e.g. asdf)" spellcheck="false" />
+                <button class="secondary-btn" type="button" id="add-word"><svg class="ic" aria-hidden="true"><use href="#i-plus"></use></svg>add</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================== AI PROMPT ===================== -->
+        <section class="panel" data-panel="prompt">
+          <div class="panel-head">
+            <h2>Prompt</h2>
+            <p>Customise the instructions sent to the model. Advanced, but powerful.</p>
+          </div>
+
+          <div class="card">
+            <div class="card-body">
+              <div class="prompt-toolbar">
+                <div class="placeholder-help">
+                  <span class="hint">Required placeholders, click to insert:</span>
+                  <button class="placeholder-chip" type="button" data-ph="{files_summary}">{files_summary}</button>
+                  <button class="placeholder-chip" type="button" data-ph="{diffs}">{diffs}</button>
+                </div>
+                <button class="ghost-btn" type="button" id="reset-prompt"><svg class="ic" aria-hidden="true"><use href="#i-rotate"></use></svg>reset</button>
+              </div>
+              <textarea id="prompt-template" class="prompt-area" spellcheck="false" rows="16"></textarea>
+              <p id="prompt-error" class="inline-result"></p>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================== HISTORY & STATS ===================== -->
+        <section class="panel" data-panel="history">
+          <div class="panel-head">
+            <h2>Stats</h2>
+            <p>Insight into your generated commits. All data stays on this machine.</p>
+          </div>
+
+          <dl class="stat-row">
+            <div class="stat"><dt>commits generated</dt><dd id="stat-total">0</dd></div>
+            <div class="stat"><dt>acceptance rate</dt><dd id="stat-accept">0%</dd></div>
+            <div class="stat"><dt>overrides used</dt><dd id="stat-overrides">0</dd></div>
+          </dl>
+
+          <div class="dash-grid">
+            <div class="card">
+              <div class="card-head">
+                <h3>Type distribution</h3>
+              </div>
+              <div class="card-body">
+                <div id="type-dist" class="dist"></div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-head between">
+                <h3>Recent activity</h3>
+                <button class="ghost-btn danger" type="button" id="clear-history"><svg class="ic" aria-hidden="true"><use href="#i-trash"></use></svg>clear</button>
+              </div>
+              <div class="card-body">
+                <div id="recent-list" class="recent-list"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <h3>History recording</h3>
+            </div>
+            <div class="card-body">
+              <div class="toggle-row">
+                <div>
+                  <strong>Record commit history</strong>
+                  <p class="hint">Log generated messages and outcomes locally.</p>
+                </div>
+                <label class="switch"><input type="checkbox" id="history-enabled" /><span class="slider"></span></label>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
   </div>
 
   <footer class="save-bar">

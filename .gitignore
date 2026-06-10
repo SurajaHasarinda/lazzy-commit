@@ -6,6 +6,10 @@
 .lazzycommit/
 *.jsonl
 
+# Generated graphs and user-specific docs
+graphify-out/
+CLAUDE.md
+
 # Python cache
 __pycache__/
 *.py[cod]
@@ -31,3 +35,7 @@ ENV/
 dist/
 build/
 *.egg-info/
+
+# Logs
+logs/
+*.log
